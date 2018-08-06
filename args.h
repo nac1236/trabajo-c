@@ -3,8 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include <errno.h>
 #include "funciones.h"
+#include "sub.h"
 
 #define BORRAR 		1
 #define INSERTAR	2
@@ -23,7 +25,7 @@ extern int errno;
 
 struct arr{
 	int opcion;
-	char args[100];
+	void * args;
 };
 
 struct arreglo_opciones{

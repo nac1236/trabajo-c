@@ -7,25 +7,25 @@
 
 
 struct tm{
-  int tm_ml;			/* Milisegundos. [0-999]*/
-  int tm_sec;			/* Seconds.	[0-60] (1 leap second) */
-  int tm_min;			/* Minutes.	[0-59] */
-  int tm_hour;			/* Hours.	[0-23] */
+    int tm_ml;			/* Milisegundos. [0-999]*/
+    int tm_sec;			/* Seconds.	[0-60] (1 leap second) */
+    int tm_min;			/* Minutes.	[0-59] */
+    int tm_hour;		/* Hours.	[0-23] */
 };
 
 
 struct sub{
 	int indice;
-	struct tm inicio;
-	struct tm fin;
+	size_t inicio;
+	size_t fin;
 	char *texto;
 
 };
 
 struct arreglo_sub{
 	struct sub *a;
-	int tamanio;
 	int ocupado;
+	int tamanio;
 };
 
 struct arreglo_sub * inicializar(FILE * entrada);
