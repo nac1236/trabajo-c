@@ -1,7 +1,6 @@
 #include "args.h"
 
 
-
 char *opc[] = {
 	"-b",
 	"-i",
@@ -16,11 +15,35 @@ static void init_arreglo(struct arreglo_opciones *a, int initial_size) {
   a->ocupado = 0;
 }
 
-struct arr *insertar_opciones(int opt, char * s){		//creo que aca voy a necesitar lista de argumentos variable
+struct arr *insertar_opciones(int opt, int cantidad,...){	
   struct arr *tmp;
+	va_list ap;
+	va_start(ap,cantidad);
 	tmp = (struct arr *) malloc(sizeof(struct arr));
 	tmp->opcion = opt;
-	strcpy(tmp->args,s);	//arreglar el tema del tamaño	
+	if (opt == 1){
+		tmp->args = malloc(sizeof(int ));
+		char *  dato = va_arg(ap,char *);
+		tmp->args = atoi(dato);
+	}
+	if(opt == 2){ 
+		struct sub * s = malloc (sizeof(struct sub));
+		va_arg(ap,char *);
+		va_arg(ap,char *);
+		char * buf = va_arg(ap,char *);
+		s->texto = malloc(strlen(buf));
+		strcpy(s->texto,buf);
+		tmp->args=s;
+	}
+	if(opt == 3){
+		tmp->args = NULL;
+	}
+	if(opt == 4 || opt == 5){
+		char * buf = va_arg(ap,char *);
+		tmp->args = malloc(strlen(buf));
+		strcpy(tmp->args,buf);
+	}
+	va_end(ap);
 	return tmp;
 	
 }
@@ -37,9 +60,12 @@ struct arreglo_opciones *insert_operand(struct arreglo_opciones *a, struct arr *
 
 
 struct arreglo_opciones *recuperar_args(int argc, char **argv){
-	struct arreglo_opciones * arreglo = calloc (1, sizeof(struct arreglo_opciones));  //revisar esta sentencia e init:arreglo de abajo
-	struct arr * tmp;
+	struct arreglo_opciones * arreglo = calloc (1, sizeof(struct arreglo_opciones)); 
 	init_arreglo(arreglo,sizeof(struct arr));
+
+	for(int i = 0;  i< argc ; i++){
+		printf("%s ", argv[i]);
+	}
 
 	int entrada = 0 ,salida = 0;
 	//primer recorrido para recuperar -f y -o (en caso que haya). Voy a guardar estos datos en un arreglo separado para poder trabajar cuando necesite con estos datos.
@@ -48,7 +74,8 @@ struct arreglo_opciones *recuperar_args(int argc, char **argv){
 		//para agregar -f
 		if(strcasecmp (argv[i],"-f") == 0){
 			if(entrada == 0){
-				arreglo = insert_operand(arreglo,insertar_opciones(4,argv[i+1]));
+				
+				arreglo = insert_operand(arreglo,insertar_opciones(4,1,argv[i+1]));
 				printf("%s",argv[i+1]);
 				entrada++;
 			}
@@ -61,7 +88,7 @@ struct arreglo_opciones *recuperar_args(int argc, char **argv){
 		//para agregar -o
 		if(strcasecmp (argv[i],"-o") == 0){
 				if(salida == 0){
-					arreglo = insert_operand(arreglo,insertar_opciones(5,argv[i+1]));
+					arreglo = insert_operand(arreglo,insertar_opciones(5,1,argv[i+1]));
 					salida++;
 				}
 				else {
@@ -75,8 +102,8 @@ struct arreglo_opciones *recuperar_args(int argc, char **argv){
 		exit(2);
 		
 	}
-	printf("El tamaño de arreglo: %d",sizeof(struct arr) / sizeof(arreglo->opciones));
-	printf("Nombre del archivo de entrada:%s",arreglo->opciones->args);
+
+	printf("Nombre del archivo de entrada:%s",(char *) arreglo->opciones->args);
 	getchar();
 	
 
@@ -86,20 +113,24 @@ struct arreglo_opciones *recuperar_args(int argc, char **argv){
 		int optindex;	
 		for(optindex = 0; optindex < 3; optindex++){	
 			if(strcasecmp(argv[i],opc[optindex])== 0){
-				arreglo = insert_operand(arreglo,insertar_opciones(optindex + 1,"hola"));
-				// recordar modificar esta funcion ---> insert_operand(arreglo,optindex + 1);
+				if(optindex == 0){		
+					arreglo = insert_operand(arreglo,insertar_opciones(optindex + 1,1,argv[i+1]));
+				}
+				if(optindex == 1){
+					arreglo = insert_operand(arreglo,insertar_opciones(optindex + 1,3,argv[i+1],argv[i+2],argv[i+3]));
+				}
+				if(optindex == 2){
+					arreglo = insert_operand(arreglo,insertar_opciones(optindex + 1,1,NULL));
+				}
 			}
 		}
 	
 	}
 	printf("El arreglo:\n");
 	for(int i = 0; i < arreglo->ocupado;i++){
-		printf("%d",arreglo->opciones[i].opcion);
+		printf("%d ",arreglo->opciones[i].opcion);
 	}
 	printf("\n");
 	
-	printf("El tamaño de arreglo: %d", sizeof(struct arr) /sizeof(arreglo->opciones));
-	getchar();
-
 	return arreglo;
 }

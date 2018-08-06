@@ -7,13 +7,12 @@
 
 
 int main(int argc,char * argv[]){
-	long total;
 	struct arreglo_opciones * arreglo = recuperar_args(argc,argv);
 	printf("salio al main");
 	getchar();
 	for(int i = 0; i < arreglo->ocupado;i++){
 		printf("%d",arreglo->opciones[i].opcion);
 	}
-	total = process_operation(arreglo);
+	process_operation(arreglo);
 	free(arreglo);
 }

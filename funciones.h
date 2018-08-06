@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "args.h"
+#include "valida.h"
 
-long process_operation(struct arreglo_opciones *optargs);
+void process_operation(struct arreglo_opciones * optargs);
 
 #endif
